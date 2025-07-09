@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "user")
+@Table(name = "user_entity")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,11 +19,11 @@ public class UserEntity {
 
     private String username;           // From Google "name"
     private String email;              // From Google "email"
-
-    private String provider;           // e.g. "google"
-    private String providerId;         // e.g. Google sub/id
+//
+//    private String provider;           // e.g. "google"
+//    private String providerId;         // e.g. Google sub/id
     private String imageUrl;           // profile picture
 
-    @Column(name = "password")
-    private String password;           // Optional (null for Google users)
+//    @Column(name = "password")
+//    private String password;           // Optional (null for Google users)
 }
