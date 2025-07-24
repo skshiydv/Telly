@@ -14,7 +14,7 @@ public class CreateRoomDTOtoRoomEntity implements Function<CreateRoomDTO, RoomEn
         if (createRoomDTO!=null){
         roomEntity.setRoomDescription(createRoomDTO.getRoomDescription());
         roomEntity.setRoomName(createRoomDTO.getRoomName());
-        roomEntity.setRoomId(createRoomDTO.getRoomId());
+        roomEntity.setRoomType(createRoomDTO.getRoomType());
        }
         return roomEntity;
     }

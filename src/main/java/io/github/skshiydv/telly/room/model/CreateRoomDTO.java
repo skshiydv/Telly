@@ -8,6 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 public class CreateRoomDTO {
     private String roomName;
-    private String roomId;
+    private String roomType         ;
     private String roomDescription;
 }
