@@ -36,22 +36,23 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   public messages: ChatMessage[] = [];
   public newMessage: string = '';
   public currentUsername: User | null = null; // Initialize as null
-  userEmail$!: Observable<string | null>;
+  userEmail$!: Observable<any>;
   email = "";
+  toastService = inject(ToastService)
   // --- WebSocket Properties ---
   private stompClient: any;
   private chatRoomService = inject(ChatRoomService);
   private authService = inject(AuthService);
-  toastService = inject(ToastService)
   @ViewChild('messageContainer') private messageContainer!: ElementRef;
   private zone = inject(NgZone);
 
-  constructor(private route: ActivatedRoute , public dialog: MatDialog) {
+  constructor(private route: ActivatedRoute, public dialog: MatDialog) {
   }
 
   ngOnInit(): void {
-    this.userEmail$ = this.authService.email$;
-    this.userEmail$.subscribe((email) => {
+    this.userEmail$ = this.authService.currentUser$;
+    this.userEmail$.subscribe((user) => {
+      let email = user.email;
       if (email) {
         this.email = email;
         this.chatRoomService.getUserByEmail(this.email).subscribe({
@@ -80,8 +81,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       next: (res) => {
         if (res.body && this.currentUsername) {
           this.messages = (res.body as any[]).map(msg => ({
-            ...msg,
-            isOwnMessage: msg.sender === this.currentUsername!.username
+            ...msg, isOwnMessage: msg.sender === this.currentUsername!.username
           }));
           this.scrollToBottom();
         } else {
@@ -137,14 +137,33 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   sendMessage(): void {
     if (this.newMessage.trim() && this.stompClient && this.currentUsername) {
       const chatMessage = {
-        sender: this.currentUsername.username,
-        messageContent: this.newMessage,
-        receiver: this.roomName
+        sender: this.currentUsername.username, messageContent: this.newMessage, receiver: this.roomName
       };
       this.stompClient.send(`/app/sendMessage/${this.roomName}`, {}, JSON.stringify(chatMessage));
 
       this.newMessage = '';
     }
+  }
+
+  leaveRoom() {
+    this.chatRoomService.leaveRoom(this.roomName).subscribe({
+      next: (res) => {
+        console.log(res.body)
+        this.toastService.show("success", "Success", "Room left Successfully")
+      }, error: (err) => {
+        console.log(err)
+        this.toastService.show("error", "Error", err.statusText)
+      }
+    })
+  }
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(CreateTaskModalComponent, {
+      height: '400px', width: '400px', data: {roomName: this.roomName}
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed', result);
+    });
   }
 
   private scrollToBottom(): void {
@@ -154,28 +173,5 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       }, 0);
     } catch (err) {
     }
-  }
-  leaveRoom(){
-    this.chatRoomService.leaveRoom(this.roomName).subscribe({
-      next: (res) => {
-        console.log(res.body)
-        this.toastService.show("success" , "Success","Room left Successfully")
-      },
-      error: (err) => {
-        console.log(err)
-        this.toastService.show("error" , "Error",err.statusText)
-      }
-    })
-  }
-  openDialog(): void {
-    const dialogRef = this.dialog.open(CreateTaskModalComponent,{
-      height:'400px',
-      width:'400px',
-      data:{roomName:this.roomName}
-    }
-    );
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed', result);
-    });
   }
 }
