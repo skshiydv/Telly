@@ -27,3 +27,7 @@ export class AuthService {
     localStorage.setItem('access_token', token);
   }
 }
+
+
+export class User {
+}

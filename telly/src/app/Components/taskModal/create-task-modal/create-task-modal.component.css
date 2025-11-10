@@ -1,5 +1,6 @@
 /* --- Global Scrollbar Styles --- */
 /* This will style all scrollbars in the application for a consistent look */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -86,7 +87,7 @@
 }
 
 /* --- NEW: Form Styles (Themed) --- */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
+
 
 /* This container is designed for a modal/dialog */
 .create-form-container {
